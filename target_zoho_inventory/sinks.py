@@ -135,6 +135,6 @@ class BuyOrderSink(ZohoInventorySink):
             response = self.request_api(
                 "POST", endpoint=self.endpoint, request_data=record
             )
-            res_json = response.json()
-            self.logger.info(f"{self.name} created with id: {res_json['id']}")
-            return id, True, state_updates
+            res_json_id = response.json()["purchaseorder"]["purchaseorder_id"]
+            self.logger.info(f"{self.name} created with id: {res_json_id}")
+            return res_json_id, True, state_updates
