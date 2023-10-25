@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "target-zohoinventory"
+name = "target-zoho-inventory"
 version = "0.0.1"
 description = "`target-zohoinventory` is a Singer target for ZohoInventory, built with the Meltano SDK for Singer Targets."
 authors = ["FirstName LastName"]
@@ -36,4 +36,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 # CLI declaration
-target-zohoinventory = 'target_zoho_inventory.target:TargetZohoInventory.cli'
+target-zoho-inventory = 'target_zoho_inventory.target:TargetZohoInventory.cli'
