@@ -7,7 +7,7 @@ from difflib import SequenceMatcher
 from heapq import nlargest as _nlargest
 from target_zoho_inventory.auth import ZohoInventoryAuthenticator 
 import ast
-
+from urllib.parse import urlparse
 
 class ZohoInventorySink(HotglueSink):
     def __init__(
@@ -27,6 +27,10 @@ class ZohoInventorySink(HotglueSink):
     @property
     def authenticator(self):
         url = self.config.get("auth_url", "https://accounts.zoho.com/oauth/v2/token")
+        #validate url
+        result = urlparse(url)
+        if not all([result.scheme, result.netloc]):
+            url = "https://accounts.zoho.com/oauth/v2/token"
         return ZohoInventoryAuthenticator(
             self._target, self.auth_state, url
         )
