@@ -104,6 +104,9 @@ class BuyOrderSink(ZohoInventorySink):
             "date": transaction_date,
         }
 
+        if record.get("id"):
+            payload.update({"reference_number":record.get("id")})
+
         #get supplier_name
         if record.get("supplier_name"):
             matches = self.search_vendors(record["supplier_name"])
