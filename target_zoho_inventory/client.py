@@ -22,11 +22,23 @@ class ZohoInventorySink(HotglueSink):
         super().__init__(target, stream_name, schema, key_properties)
 
     auth_state = {}
-    base_url = "https://inventory.zoho.com/api/v1"
+
+    @property
+    def base_url(self):
+        accounts_server = self.config.get("accounts-server")
+        if accounts_server:
+            region = accounts_server.split(".")[-1]
+            return f"https://inventory.zoho.{region}/api/v1"
+        return "https://inventory.zoho.com/api/v1"
     
     @property
     def authenticator(self):
-        url = self.config.get("auth_url", "https://accounts.zoho.com/oauth/v2/token")
+        if self.config.get("auth_url"):
+            url = self.config.get("auth_url")
+        elif self.config.get("accounts-server"):
+            url = f"{self.config.get('accounts-server')}/oauth/v2/token"
+        else:
+            url = "https://accounts.zoho.com/oauth/v2/token"
         #validate url
         result = urlparse(url)
         if not all([result.scheme, result.netloc]):

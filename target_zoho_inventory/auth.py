@@ -82,14 +82,18 @@ class ZohoInventoryAuthenticator:
 
         try:
             token_response.raise_for_status()
-            self.logger.info("OAuth authorization attempt was successful.")
+            token_json = token_response.json()
+            if token_json.get("error"):
+                self.state.update({"auth_error_response": token_response.json()})
+                raise RuntimeError(
+                    f"Failed OAuth login, response was '{token_response.json()}'. {ex}"
+                )
         except Exception as ex:
-            self.state.update({"auth_error_response": token_response.json()})
             raise RuntimeError(
-                f"Failed OAuth login, response was '{token_response.json()}'. {ex}"
-            )
-        token_json = token_response.json()
-        
+                    f"Failed OAuth login, response was '{token_response.json()}'. {ex}"
+                )
+
+        self.logger.info("OAuth authorization attempt was successful.")
         self.access_token = token_json["access_token"]
 
         self._config["access_token"] = token_json["access_token"]
