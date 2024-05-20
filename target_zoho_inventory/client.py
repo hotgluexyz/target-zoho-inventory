@@ -28,8 +28,8 @@ class ZohoInventorySink(HotglueSink):
         accounts_server = self.config.get("accounts-server")
         if accounts_server:
             region = accounts_server.split(".")[-1]
-            return f"https://inventory.zoho.{region}/api/v1"
-        return "https://inventory.zoho.com/api/v1"
+            return f"https://www.zohoapis.{region}/inventory/v1"
+        return "https://www.zohoapis.com/inventory/v1"
     
     @property
     def authenticator(self):
