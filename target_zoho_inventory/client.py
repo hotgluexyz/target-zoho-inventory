@@ -93,6 +93,8 @@ class ZohoInventorySink(HotglueSink):
             record_jsonpath = 'contacts'
         
         headers = self.http_headers
+        if self.config.get('organization_id'):
+            params['organization_id'] = self.config.get('organization_id')
         resp = self.request_api("GET", path, params=params)
         parsed_resp = json.loads(resp.content)
         records = []
