@@ -52,9 +52,13 @@ class PurchaseOrderSink(ZohoInventorySink):
         headers = self.http_headers
 
         self.logger.info(f"Posting record to {path}")
+        params = {}
+        if self.config.get('organization_id'):
+            params['organization_id'] = self.config.get('organization_id')
 
         resp = self.request_api(
-            "POST", path, request_data=request_data, headers=headers
+            "POST", path, request_data=request_data,
+            params=params, headers=headers
         )
 
     def parse_line(self, line):
@@ -135,8 +139,13 @@ class BuyOrderSink(ZohoInventorySink):
     def upsert_record(self, record: dict, context: dict) -> None:
         state_updates = dict()
         if record:
+            params = {}
+            if self.config.get('organization_id'):
+                params['organization_id'] = self.config.get('organization_id')
             response = self.request_api(
-                "POST", endpoint=self.endpoint, request_data=record
+                "POST", endpoint=self.endpoint,
+                request_data=record,
+                params=params
             )
             res_json_id = response.json()["purchaseorder"]["purchaseorder_id"]
             self.logger.info(f"{self.name} created with id: {res_json_id}")
