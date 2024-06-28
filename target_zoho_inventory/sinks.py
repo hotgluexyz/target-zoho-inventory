@@ -118,7 +118,7 @@ class BuyOrderSink(ZohoInventorySink):
                 vendor_id = matches[0]["contact_id"]
                 payload["vendor_id"] = vendor_id
             else:
-                self.logger.info(f"Skipping order because no matches found for vendor {record['vendorName']}")
+                self.logger.info(f"Skipping order because no matches found for vendor {record['supplier_name']}")
                 return None
 
         #process line_items
