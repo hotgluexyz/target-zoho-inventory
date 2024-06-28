@@ -106,6 +106,8 @@ class ZohoInventorySink(HotglueSink):
                 field:name,
                 "page": parsed_resp['page_context']['page'] + 1
             }
+            if self.config.get('organization_id'):
+                params['organization_id'] = self.config.get('organization_id')
             resp = self.request_api("GET",path,headers=headers,params=params)
             parsed_resp = json.loads(resp.content)
             records += parsed_resp[record_jsonpath]
