@@ -150,3 +150,64 @@ class BuyOrderSink(ZohoInventorySink):
             res_json_id = response.json()["purchaseorder"]["purchaseorder_id"]
             self.logger.info(f"{self.name} created with id: {res_json_id}")
             return res_json_id, True, state_updates
+
+
+class AssemblyOrderSink(ZohoInventorySink):
+    """ZohoInventory target sink class for assembly orders."""
+
+    name = "AssemblyOrders"
+    endpoint = "/bundles"
+
+    def preprocess_record(self, record: dict, context: dict) -> dict:
+        # Process date
+        transaction_date = record.get("transaction_date")
+        if isinstance(transaction_date, datetime):
+            transaction_date = transaction_date.strftime("%Y-%m-%d")
+        
+        # Get payload
+        payload = {
+            "date": transaction_date,
+            "composite_item_id": record.get("product_remoteId"),
+            "composite_item_name": record.get("product_name"),
+            "quantity_to_bundle": record.get("quantity"),
+            "is_completed": record.get("is_completed", False),
+        }
+        
+        if record.get("id"):
+            payload.update({"reference_number":record.get("id")})
+
+        # Process line items
+        line_items = record.get("line_items", [])
+        if isinstance(line_items, str):
+            line_items = self.parse_objs(line_items)
+        if line_items:
+            processed_line_items = []
+            for item in line_items:
+                processed_item = {
+                    "item_id": item.get("part_product_remoteId"),
+                    "item_name": item.get("part_product_name"),
+                    "quantity_consumed": item.get("part_quantity"),
+                    "account_id": record.get("account_id"),
+                }                
+                processed_line_items.append(processed_item)
+            payload["line_items"] = processed_line_items
+        else:
+            self.logger.info("Skipping assembly order with no line items")
+            return None
+
+        return payload
+
+    def upsert_record(self, record: dict, context: dict) -> None:
+        state_updates = dict()
+        if record:
+            params = {}
+            if self.config.get('organization_id'):
+                params['organization_id'] = self.config.get('organization_id')
+            response = self.request_api(
+                "POST", endpoint=self.endpoint,
+                request_data=record,
+                params=params
+            )
+            res_json_id = response.json()["bundle"]["bundle_id"]
+            self.logger.info(f"{self.name} created with id: {res_json_id}")
+            return res_json_id, True, state_updates
