@@ -151,7 +151,6 @@ class BuyOrderSink(ZohoInventorySink):
             self.logger.info(f"{self.name} created with id: {res_json_id}")
             return res_json_id, True, state_updates
 
-
 class AssemblyOrderSink(ZohoInventorySink):
     """ZohoInventory target sink class for assembly orders."""
 
