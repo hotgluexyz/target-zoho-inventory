@@ -7,7 +7,8 @@ from singer_sdk import typing as th
 
 from target_zoho_inventory.sinks import (
     PurchaseOrderSink,
-    BuyOrderSink
+    BuyOrderSink,
+    AssemblyOrderSink
 )
 
 
@@ -42,7 +43,7 @@ class TargetZohoInventory(TargetHotglue):
             description="Refresh token for client app"
         )
     ).to_dict()
-    SINK_TYPES = [PurchaseOrderSink, BuyOrderSink]
+    SINK_TYPES = [PurchaseOrderSink, BuyOrderSink, AssemblyOrderSink]
 
 if __name__ == "__main__":
     TargetZohoInventory.cli()
