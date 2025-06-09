@@ -185,9 +185,11 @@ class AssemblyOrderSink(ZohoInventorySink):
                 processed_item = {
                     "item_id": item.get("part_product_remoteId"),
                     "item_name": item.get("part_product_name"),
-                    "quantity_consumed": item.get("part_quantity"),
-                    "account_id": record.get("account_id"),
-                }                
+                    "quantity_consumed": item.get("part_quantity")
+                }
+                if item.get("account_id"):
+                    processed_item["account_id"] = item.get("account_id")
+                
                 processed_line_items.append(processed_item)
             payload["line_items"] = processed_line_items
         else:
