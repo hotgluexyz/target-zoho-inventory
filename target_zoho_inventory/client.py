@@ -35,10 +35,9 @@ class ZohoInventorySink(HotglueSink):
         return top_level_domain
 
     @property
-    def url_base(self) -> str:
+    def base_url(self) -> str:
         """Return the API base URL, derived from the Zoho accounts server domain."""
         return f"https://www.zohoapis.{self.domain}/inventory/v1"
-
     
     @property
     def authenticator(self):
