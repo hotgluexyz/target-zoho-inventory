@@ -119,7 +119,7 @@ class BuyOrderSink(ZohoInventorySink):
                 payload["vendor_id"] = vendor_id
             else:
                 self.logger.info(f"Skipping order because no matches found for vendor {record['supplier_name']}")
-                return None
+                raise ValueError(f"No matches found for vendor {record['supplier_name']}")
 
         #process line_items
         line_items = record.get("line_items", [])
@@ -133,7 +133,7 @@ class BuyOrderSink(ZohoInventorySink):
             payload["line_items"] = line_items
         else:
             self.logger.info("Skipping order with no line items")
-            return None
+            raise ValueError("Order has no line items")
         return payload
 
     def upsert_record(self, record: dict, context: dict) -> None:
@@ -184,7 +184,7 @@ class AssemblyOrderSink(ZohoInventorySink):
             for item in line_items:
                 processed_item = {
                     "item_id": item.get("part_product_remoteId"),
-                    "item_name": item.get("part_product_name"),
+                    "name": item.get("part_product_name"),
                     "quantity_consumed": item.get("part_quantity")
                 }
                 if item.get("account_id"):
