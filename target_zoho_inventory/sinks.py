@@ -86,11 +86,6 @@ class PurchaseOrderSink(ZohoInventorySink):
             "description": line.get("description"),
         }
 
-    @property
-    def base_url(self):
-        return "https://inventory.zoho.com/api/v1"
-
-
 class BuyOrderSink(ZohoInventorySink):
     """ZohoInventory target sink class."""
 

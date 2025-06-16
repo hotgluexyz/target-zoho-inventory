@@ -23,20 +23,39 @@ class ZohoInventorySink(HotglueSink):
 
     auth_state = {}
 
+
     @property
-    def base_url(self):
-        accounts_server = self.config.get("accounts-server")
-        if accounts_server:
-            region = accounts_server.split(".")[-1]
-            return f"https://inventory.zoho.{region}/api/v1"
-        return "https://inventory.zoho.com/api/v1"
+    def domain(self) -> str:
+        """Return the domain of the Zoho accounts server."""
+        default_accounts_url = "https://accounts.zoho.com"
+        accounts_url = self.config.get("accounts-server", default_accounts_url)
+        parsed = urlparse(accounts_url)
+        domain_parts = parsed.netloc.split(".")
+        top_level_domain =  domain_parts[-1] if len(domain_parts) >= 2 else "com"
+        return top_level_domain
+
+    @property
+    def base_url(self) -> str:
+        """Return the API base URL, derived from the Zoho accounts server domain."""
+        return f"https://www.zohoapis.{self.domain}/inventory/v1"
     
     @property
     def authenticator(self):
         if self.config.get("auth_url"):
             url = self.config.get("auth_url")
         elif self.config.get("accounts-server"):
-            url = f"{self.config.get('accounts-server')}/oauth/v2/token"
+            domain = self.domain
+            
+            domain_map = {
+                "eu": "https://accounts.zoho.eu",
+                "in": "https://accounts.zoho.in",
+                "au": "https://accounts.zoho.com.au",
+                "ca": "https://accounts.zohocloud.ca",
+            }
+
+            base_url = domain_map.get(domain, "https://accounts.zoho.com")
+            url = f"{base_url}/oauth/v2/token"
+
         else:
             url = "https://accounts.zoho.com/oauth/v2/token"
         #validate url
