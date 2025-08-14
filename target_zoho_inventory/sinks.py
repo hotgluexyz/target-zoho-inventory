@@ -201,6 +201,9 @@ class AssemblyOrderSink(ZohoInventorySink):
             }
             if self.config.get('organization_id'):
                 params['organization_id'] = self.config.get('organization_id')
+            
+            self.logger.info(f"Posting record to {self.endpoint}")
+            self.logger.info(f"Params: {params}")
             response = self.request_api(
                 "POST", endpoint=self.endpoint,
                 request_data=record,
