@@ -196,8 +196,8 @@ class AssemblyOrderSink(ZohoInventorySink):
                     "name": item.get("part_product_name"),
                     "quantity_consumed": item.get("part_quantity"),
                 }
-                if self.config.get('warehouse_id'):
-                    processed_item["warehouse_id"] = self.config.get('warehouse_id')
+                if self.config.get('export_warehouse_id '):
+                    processed_item["warehouse_id"] = self.config.get('export_warehouse_id ')
                           
                 if item.get("account_id"):
                     processed_item["account_id"] = item.get("account_id")
