@@ -55,16 +55,10 @@ class PurchaseOrderSink(ZohoInventorySink):
         if self.config.get('organization_id'):
             params['organization_id'] = self.config.get('organization_id')
 
-        # Construct the full URL for logging
-        full_url = f"{self.base_url}{path}"
-        if params:
-            import urllib.parse
-            query_string = urllib.parse.urlencode(params)
-            full_url = f"{full_url}?{query_string}"
-        
+        # Let requests handle the URL construction - just log the components
         self.logger.info(f"POST Request Details:")
         self.logger.info(f"  Endpoint: {path}")
-        self.logger.info(f"  Full URL: {full_url}")
+        self.logger.info(f"  Base URL: {self.base_url}")
         self.logger.info(f"  Parameters: {params}")
         self.logger.info(f"  Request Data: {request_data}")
 
@@ -150,16 +144,10 @@ class BuyOrderSink(ZohoInventorySink):
             if self.config.get('organization_id'):
                 params['organization_id'] = self.config.get('organization_id')
             
-            # Construct the full URL for logging
-            full_url = f"{self.base_url}{self.endpoint}"
-            if params:
-                import urllib.parse
-                query_string = urllib.parse.urlencode(params)
-                full_url = f"{full_url}?{query_string}"
-            
+            # Let requests handle the URL construction - just log the components
             self.logger.info(f"POST Request Details:")
             self.logger.info(f"  Endpoint: {self.endpoint}")
-            self.logger.info(f"  Full URL: {full_url}")
+            self.logger.info(f"  Base URL: {self.base_url}")
             self.logger.info(f"  Parameters: {params}")
             self.logger.info(f"  Request Data: {record}")
             
@@ -206,8 +194,11 @@ class AssemblyOrderSink(ZohoInventorySink):
                 processed_item = {
                     "item_id": item.get("part_product_remoteId"),
                     "name": item.get("part_product_name"),
-                    "quantity_consumed": item.get("part_quantity")
+                    "quantity_consumed": item.get("part_quantity"),
                 }
+                if self.config.get('warehouse_id'):
+                    processed_item["warehouse_id"] = self.config.get('warehouse_id')
+                          
                 if item.get("account_id"):
                     processed_item["account_id"] = item.get("account_id")
                 
@@ -227,11 +218,7 @@ class AssemblyOrderSink(ZohoInventorySink):
             }
             if self.config.get('organization_id'):
                 params['organization_id'] = self.config.get('organization_id')
-            
 
-            
-            self.logger.info(f"POST Request Details:")
-            self.logger.info(f"  Endpoint: {self.endpoint}")
             self.logger.info(f"  Parameters: {params}")
             self.logger.info(f"  Request Data: {record}")
             
