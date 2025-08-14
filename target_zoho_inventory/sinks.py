@@ -51,10 +51,22 @@ class PurchaseOrderSink(ZohoInventorySink):
 
         headers = self.http_headers
 
-        self.logger.info(f"Posting record to {path}")
         params = {}
         if self.config.get('organization_id'):
             params['organization_id'] = self.config.get('organization_id')
+
+        # Construct the full URL for logging
+        full_url = f"{self.base_url}{path}"
+        if params:
+            import urllib.parse
+            query_string = urllib.parse.urlencode(params)
+            full_url = f"{full_url}?{query_string}"
+        
+        self.logger.info(f"POST Request Details:")
+        self.logger.info(f"  Endpoint: {path}")
+        self.logger.info(f"  Full URL: {full_url}")
+        self.logger.info(f"  Parameters: {params}")
+        self.logger.info(f"  Request Data: {request_data}")
 
         resp = self.request_api(
             "POST", path, request_data=request_data,
@@ -137,6 +149,20 @@ class BuyOrderSink(ZohoInventorySink):
             params = {}
             if self.config.get('organization_id'):
                 params['organization_id'] = self.config.get('organization_id')
+            
+            # Construct the full URL for logging
+            full_url = f"{self.base_url}{self.endpoint}"
+            if params:
+                import urllib.parse
+                query_string = urllib.parse.urlencode(params)
+                full_url = f"{full_url}?{query_string}"
+            
+            self.logger.info(f"POST Request Details:")
+            self.logger.info(f"  Endpoint: {self.endpoint}")
+            self.logger.info(f"  Full URL: {full_url}")
+            self.logger.info(f"  Parameters: {params}")
+            self.logger.info(f"  Request Data: {record}")
+            
             response = self.request_api(
                 "POST", endpoint=self.endpoint,
                 request_data=record,
@@ -202,8 +228,13 @@ class AssemblyOrderSink(ZohoInventorySink):
             if self.config.get('organization_id'):
                 params['organization_id'] = self.config.get('organization_id')
             
-            self.logger.info(f"Posting record to {self.endpoint}")
-            self.logger.info(f"Params: {params}")
+
+            
+            self.logger.info(f"POST Request Details:")
+            self.logger.info(f"  Endpoint: {self.endpoint}")
+            self.logger.info(f"  Parameters: {params}")
+            self.logger.info(f"  Request Data: {record}")
+            
             response = self.request_api(
                 "POST", endpoint=self.endpoint,
                 request_data=record,
