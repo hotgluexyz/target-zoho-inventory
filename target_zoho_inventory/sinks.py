@@ -196,7 +196,9 @@ class AssemblyOrderSink(ZohoInventorySink):
     def upsert_record(self, record: dict, context: dict) -> None:
         state_updates = dict()
         if record:
-            params = {}
+            params = {
+                "ignore_auto_number_generation" : True
+            }
             if self.config.get('organization_id'):
                 params['organization_id'] = self.config.get('organization_id')
             response = self.request_api(
