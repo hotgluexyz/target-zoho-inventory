@@ -54,7 +54,6 @@ class PurchaseOrderSink(ZohoInventorySink):
         params = {}
         if self.config.get('organization_id'):
             params['organization_id'] = self.config.get('organization_id')
-            
         resp = self.request_api(
             "POST", path, request_data=request_data,
             params=params, headers=headers
@@ -136,7 +135,6 @@ class BuyOrderSink(ZohoInventorySink):
             params = {}
             if self.config.get('organization_id'):
                 params['organization_id'] = self.config.get('organization_id')
-            
             response = self.request_api(
                 "POST", endpoint=self.endpoint,
                 request_data=record,
