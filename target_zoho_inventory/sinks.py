@@ -54,14 +54,7 @@ class PurchaseOrderSink(ZohoInventorySink):
         params = {}
         if self.config.get('organization_id'):
             params['organization_id'] = self.config.get('organization_id')
-
-        # Let requests handle the URL construction - just log the components
-        self.logger.info(f"POST Request Details:")
-        self.logger.info(f"  Endpoint: {path}")
-        self.logger.info(f"  Base URL: {self.base_url}")
-        self.logger.info(f"  Parameters: {params}")
-        self.logger.info(f"  Request Data: {request_data}")
-
+            
         resp = self.request_api(
             "POST", path, request_data=request_data,
             params=params, headers=headers
@@ -144,13 +137,6 @@ class BuyOrderSink(ZohoInventorySink):
             if self.config.get('organization_id'):
                 params['organization_id'] = self.config.get('organization_id')
             
-            # Let requests handle the URL construction - just log the components
-            self.logger.info(f"POST Request Details:")
-            self.logger.info(f"  Endpoint: {self.endpoint}")
-            self.logger.info(f"  Base URL: {self.base_url}")
-            self.logger.info(f"  Parameters: {params}")
-            self.logger.info(f"  Request Data: {record}")
-            
             response = self.request_api(
                 "POST", endpoint=self.endpoint,
                 request_data=record,
@@ -218,9 +204,6 @@ class AssemblyOrderSink(ZohoInventorySink):
             }
             if self.config.get('organization_id'):
                 params['organization_id'] = self.config.get('organization_id')
-
-            self.logger.info(f"  Parameters: {params}")
-            self.logger.info(f"  Request Data: {record}")
             
             response = self.request_api(
                 "POST", endpoint=self.endpoint,
