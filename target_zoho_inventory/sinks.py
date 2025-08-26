@@ -208,6 +208,12 @@ class AssemblyOrderSink(ZohoInventorySink):
                 request_data=record,
                 params=params
             )
-            res_json_id = response.json()["bundle"]["bundle_id"]
-            self.logger.info(f"{self.name} created with id: {res_json_id}")
-            return res_json_id, True, state_updates
+            
+            try:
+                res_json_id = response.json()["bundle"]["bundle_id"]
+                self.logger.info(f"{self.name} created with id: {res_json_id}")
+                return res_json_id, True, state_updates
+            except Exception as e:
+                self.logger.error(f"Failed to extract bundle ID from response: {e}")
+                self.logger.error(f"Response content: {response.text}")
+                return None, False, state_updates
