@@ -51,11 +51,9 @@ class PurchaseOrderSink(ZohoInventorySink):
 
         headers = self.http_headers
 
-        self.logger.info(f"Posting record to {path}")
         params = {}
         if self.config.get('organization_id'):
             params['organization_id'] = self.config.get('organization_id')
-
         resp = self.request_api(
             "POST", path, request_data=request_data,
             params=params, headers=headers
@@ -180,8 +178,11 @@ class AssemblyOrderSink(ZohoInventorySink):
                 processed_item = {
                     "item_id": item.get("part_product_remoteId"),
                     "name": item.get("part_product_name"),
-                    "quantity_consumed": item.get("part_quantity")
+                    "quantity_consumed": item.get("part_quantity"),
                 }
+                if self.config.get('export_warehouse_id'):
+                    processed_item["warehouse_id"] = self.config.get('export_warehouse_id')
+                               
                 if item.get("account_id"):
                     processed_item["account_id"] = item.get("account_id")
                 
@@ -196,14 +197,26 @@ class AssemblyOrderSink(ZohoInventorySink):
     def upsert_record(self, record: dict, context: dict) -> None:
         state_updates = dict()
         if record:
-            params = {}
+            params = {
+                "ignore_auto_number_generation" : True
+            }
             if self.config.get('organization_id'):
                 params['organization_id'] = self.config.get('organization_id')
+            
+
             response = self.request_api(
                 "POST", endpoint=self.endpoint,
                 request_data=record,
                 params=params
             )
-            res_json_id = response.json()["bundle"]["bundle_id"]
-            self.logger.info(f"{self.name} created with id: {res_json_id}")
-            return res_json_id, True, state_updates
+
+            
+            try:
+                res_json_id = response.json()["bundle"]["bundle_id"]
+                self.logger.info(f"{self.name} created with id: {res_json_id}")
+                return res_json_id, True, state_updates
+            except Exception as e:
+                self.logger.error(f"Failed to extract bundle ID from response: {e}")
+                self.logger.error(f"Response content: {response.text}")
+                return None, False, state_updates
+
