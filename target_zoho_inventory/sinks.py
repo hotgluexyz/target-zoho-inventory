@@ -107,6 +107,9 @@ class BuyOrderSink(ZohoInventorySink):
         if record.get("terms"):
             payload.update({"terms": record.get("terms")})
 
+        if record.get("payment_terms"):
+            payload.update({"payment_terms": record.get("payment_terms")})
+
         #get supplier_name
         if record.get("supplier_name"):
             matches = self.search_vendors(record["supplier_name"])
